@@ -5,7 +5,7 @@ const execFileAsync = util.promisify(execFile);
 import {scan} from '../util/ble-scan';
 import {macAddress} from '../util/mac-address';
 
-export const IC4_LOCALNAME = 'IC Bike';
+export const FB_LOCALNAME = 'Flex Bike';
 
 // GATT service/characteristic UUIDs
 const FTMS_SERVICE_UUID = '1826';
@@ -60,32 +60,10 @@ export class Ic4BikeClient extends EventEmitter {
     const [indoorBikeData] = characteristics;
     this.indoorBikeData = indoorBikeData;
 
-    // subscribe to receive data
-    this.indoorBikeData.on('read', this.onReceive);
-
-    // Workaround for enabling notifications on the IC4 bike.
-    //
-    // Characteristic notifications are enabled by setting bit 0 of the Client
-    // Characteristic Configuration Descriptor (CCCD) to 1.
-    //
-    // Using the hci-socket bindings, noble's subscribeAsync() translates to:
-    //
-    // => ATT Read By Type Request    # get cccd handle and value
-    // <= ATT Read By Type Response
-    // => ATT Write Request           # set new value with bit 0 set to 1
-    //
-    // However the IC4 bike never sends the Read By Type Response.
-    //
-    // So the workaround below does this instead:
-    //
-    // => ATT Find Info Request       # get all descriptor handles
-    // <= ATT Find Info Response
-    // => ATT Write Request           # set value to 1 (0100 uint16le)
-    //
-    //await this.indoorBikeData.subscribeAsync(); // doesn't work
-    await this.indoorBikeData.discoverDescriptorsAsync();
-    const cccd = this.indoorBikeData.descriptors.find(d => d.uuid == '2902');
-    await cccd.writeValueAsync(Buffer.from([1,0])); // 0100 <- enable notifications
+    await this.indoorBikeData.subscribeAsync(); // doesn't work
+   // await this.indoorBikeData.discoverDescriptorsAsync();
+   // const cccd = this.indoorBikeData.descriptors.find(d => d.uuid == '2902');
+   // await cccd.writeValueAsync(Buffer.from([1,0])); // 0100 <- enable notifications
 
     this.state = 'connected';
   }
