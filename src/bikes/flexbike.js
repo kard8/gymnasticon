@@ -13,8 +13,8 @@ const INDOOR_BIKE_DATA_UUID = '2ad2';
 
 // indoor bike data characteristic value parsing
 const IBD_VALUE_MAGIC = Buffer.from([0x44]); // identifies indoor bike data message
-const IBD_VALUE_IDX_POWER = 6; // 16-bit power (watts) data offset within packet
-const IBD_VALUE_IDX_CADENCE = 4; // 16-bit cadence (1/2 rpm) data offset within packet
+const IBD_VALUE_IDX_POWER = 8; // 16-bit power (watts) data offset within packet
+const IBD_VALUE_IDX_CADENCE = 2; // 16-bit cadence (1/2 rpm) data offset within packet
 
 const debuglog = require('debug')('gym:bikes:ic4');
 
